@@ -23,13 +23,13 @@ SAVE_DATA = []
 
 def send_exp_data():
     global SAVE_DATA
-
     while interface.receive_data_from_exp() != "DATA_START":
         pass
     send_message = '{"msg_id":"11","timestamp":"'+str(time.time_ns())+'","status":"Experiment Starting","Data":""}'
     send(send_message)
     while True:
         exp_data = interface.receive_data_from_exp()
+        print(exp_data)
         if exp_data != "DATA_END":
             SAVE_DATA.append('{"timestamp":"'+str(time.time_ns())+'","Data":'+str(exp_data)+'}')
             send_message = '{"msg_id":"11","timestamp":"'+str(time.time_ns())+'","status":"running","Data":'+str(exp_data)+'}'
@@ -87,7 +87,7 @@ def send(msg):
     except socket.error:
         raise socket.error
 
-
+#erro aqui 
 def Send_Config_to_Pid(myjson):
     print("Recebi mensagem de configurestart. A tentar configurar pic")
     actual_config, config_feita_correcta = interface.do_config(myjson)
@@ -95,7 +95,9 @@ def Send_Config_to_Pid(myjson):
         data_thread = threading.Thread(target=send_exp_data,daemon=True)
         print("PIC configurado.\n")
         if interface.do_start():                            #tentar começar experiencia
+            print("aqui")
             data_thread.start()
+            time.sleep(0.000001)
             #O JSON dos config parameters está mal e crasha o server. ARRANJAR
             #send_mensage = '{"reply_id": "2","status":"Experiment Running","config_params":"'+str(myjson["config_params"])+'}'
             send_mensage = '{"reply_id": "2","status":"Experiment Running"}'

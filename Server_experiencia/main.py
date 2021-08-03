@@ -7,6 +7,34 @@ import datetime
 import os
 import re
 import collections.abc
+from time import sleep
+from queue import Queue
+
+import logging
+from flask import Flask, request, jsonify, session, Response
+# from flask_session import Session
+# from flask_csv import send_csv
+from flask_cors import CORS
+app = Flask(__name__)
+app.secret_key = '*}6Ttt)G7X_T}3VF:ygc'
+
+
+app.config['SESSION_TYPE'] = 'filesystem'
+# app.config['SESSION_TYPE'] = 'memcached'
+#sess = Session(app)
+    
+
+app.debug = False
+#app.logger.disabled = False
+
+
+
+logging.basicConfig(level=logging.DEBUG) # CRITICAL, ERROR, WARNING, INFO, and DEBUG 
+
+log = logging.getLogger('werkzeug')
+log.disabled = True
+
+CORS(app)
 
 PORT = 5050
 BINARY_DATA_PORT = 5051
@@ -15,9 +43,10 @@ DISCONNECT_MESSAGE = '!DISCONNECT'
 FORMAT='utf-8'
 HEADER=64
 BINARY_DATA_LOCATION_BASE = "~/EXP_SERVER_DATA/datafile"
-
-
-
+HELPER_DATA = {}
+FLAG = 0
+c = threading.Condition()
+q = Queue()
 
 #ITERADOR PARA DICIONARIOS PROTEGIDOS COM RW LOCK
 class Protected_Dict_Iterator:
@@ -239,29 +268,21 @@ def ConfigureRP(conn, id_exp):
 
 def ConfigureStartExperiment(user_json):
     #VALIDAR CONFIG
+    print(user_json)
     verificar = []
     conn = EXP_CONN_LIST[user_json['experiment_name']]
     exp_config_json = user_json['config_experiment']
-    #Serialize received configuration json
-    # exp_config = json.dumps(exp_config_json)
-    # print('\n')
-    # print('exp_config_json type  is '+str(type(exp_config_json)))
-    # print('\n')
-    # print('exp_config type  is '+str(type(exp_config)))
-    # print('\n')
-    # print('\n')
-    # print('User mandou: '+exp_config)
-    # print('\n')
-    # print('Limites: '+str(EXP_PROCOL[user_json['experiment_name']]))
-    # print('\n')
+
     if 'protocol' in user_json:
         protocol = int(user_json['protocol'])
     else:
         protocol = 0
+
     tester = json.loads(EXP_PROCOL[user_json['experiment_name']])
     print('Limites: '+str(tester['protocols'][protocol]['exp_paremeters']))
     print('\n')
     print('Tamanho do que o config tem guardaddo: '+str(len(tester['protocols'][protocol]['exp_paremeters'])))
+    print (user_json)
     print('Tamanho do que o user mandou: '+str(len(exp_config_json.keys())))
     print('\n')
     if len(tester['protocols'][protocol]['exp_paremeters']) == len(exp_config_json.keys()):
@@ -294,6 +315,7 @@ def ConfigureStartExperiment(user_json):
 
         #Send to target experiment server
         send(send_mensage,conn)
+        sleep(0.000001)
     else:
         # Não sei bem o que fazer quando isto acontece quando o numero de parametros que o user manda são diferentes do que se esta a espera 
         # A meu ver deviamos ter no config json la um valor default.
@@ -315,6 +337,18 @@ def ConfigureStartExperiment(user_json):
     # reply_json = json.loads(msg)
 
     #CHECK REPLY! (Alterações na função check_reply)
+
+@app.route('/user', methods=['POST'])
+def Flask_f1():
+    if request.method == 'POST':
+        #origin = request.headers.get('Origin')	
+        print(request.data)
+        user_json = json.loads(request.data.decode(FORMAT))
+        ConfigureStartExperiment(user_json)
+
+        return '' #jsonify({'JSON Enviado' : request.args.get('JSON'), 'result': 'OK!'})
+
+
 
 
 def StopCurrentExperiment(conn):
@@ -385,7 +419,7 @@ def check_msg(myjson,conn):
             send(send_mensage,conn)
         return True
     elif(msg_id == '7'):
-        print ("msg_id = "+msg_id+ 'Results received: '+str(myjson['results']))
+        #print ("msg_id = "+msg_id+ 'Results received: '+str(myjson['results']))
         return True
     elif(msg_id == '8'):
         print ("msg_id = "+msg_id+ 'Error ID:'+myjson['error']+' Status: '+myjson['status'])
@@ -398,16 +432,39 @@ def check_msg(myjson,conn):
         return True
     elif(msg_id == '11'):
         print("Recebi dados da experiencia")
+        # global HELPER_DATA
+        # c.acquire()
+        # HELPER_DATA = myjson
+        # c.notify_all()
+        # c.release()
+        global q
+        q.put(myjson)
         if str(myjson["status"]) == "Experiment Ended":
             print("Experiment ended at the time: "+str(myjson["timestamp"])+"\n") 
             # printar a varivel global 
         elif str(myjson["status"]) == "running":
-            print("Time:"+str(myjson["timestamp"])+";\n Status:"+str(myjson["status"])+";\n Dados:"+str(myjson['Data'])+"\n")
+            pass
+            # print("Time:"+str(myjson["timestamp"])+";\n Status:"+str(myjson["status"])+";\n Dados:"+str(myjson['Data'])+"\n")
             # Gravar numa variavel global todos os dados
         else:
             print("Json is incorrect verify the RPi_Server of the experemente ")
+        
     else:
         return False
+
+@app.route('/resultpoint', methods=['GET'])
+def getPoint():
+    # global HELPER_DATA
+    # c.acquire()
+    # c.wait()
+    global q
+    send_data = q.get()
+    q.task_done()
+    #HELPER_DATA = {}
+    # c.release()
+    print(send_data)
+    return send_data
+
 
 def check_reply(myjson):
         reply_msg = myjson['reply_id']
@@ -462,7 +519,7 @@ def handle_Experiments(conn,addr):
                         #Sera abusivo? Ao fazer raise de erro estou a sair como se houvesse erro
                         #mas o disconnect foi limpo
                         raise socket.error
-                    print(msg+"\n")
+                    # print(msg+"\n")
                     myjson = json.loads(msg)
                     if 'msg_id' in myjson:
                         check_msg(myjson,conn)
@@ -534,9 +591,11 @@ def local_command_func():
     
     re_name_cmd = re.compile("^(?P<experiment_name>\w+)\s(?P<experiment_command>\w+)")
     re_parameters = re.compile("(\w+):(\d+)")
+    # print(EXP_PROCOL)
     while True:
         cmd = input("Please insert command to send to a experiment\n")
         cmd = cmd.strip()
+        tester = json.loads(EXP_PROCOL["Cavidade"])
         if re_name_cmd.match(cmd) != None :
             re_match = re_name_cmd.match(cmd)
             if re_match.group("experiment_command") == "cfg" and re_match.group("experiment_name") in EXP_CONN_LIST:
@@ -547,17 +606,17 @@ def local_command_func():
                 deltaX = None
                 paramenters_found = re_parameters.findall(cmd)
                 try:
+                   
                     for paramater in paramenters_found:
-                        if paramater[0] == "deltaX":
+                        if paramater[0] == tester["protocols"][0]['exp_paremeters'][0]['nome']:
                             deltaX = int(paramater[1])
-                        elif paramater[0] == "samples":
+                        elif paramater[0] == tester["protocols"][0]['exp_paremeters'][1]['nome']:
                             samples = int(paramater[1])
                 except:
                     pass
                 if (deltaX and samples) != None:
                     print("Comando de configuração recebido. A enviar para experiência")
-                    my_config = json.loads( '{"experiment_name":"'+str(re_match.group("experiment_name"))+\
-                        '","config_experiment":{"deltaX":'+str(deltaX)+',"samples":'+str(samples)+'} }')
+                    my_config = json.loads( '{"experiment_name":"'+str(re_match.group("experiment_name"))+'","config_experiment":{"'+str(tester["protocols"][0]['exp_paremeters'][0]['nome'])+'":'+str(deltaX)+',"'+str(tester["protocols"][0]['exp_paremeters'][1]['nome'])+'":'+str(samples)+'} }')
                     ConfigureStartExperiment(my_config)
                 else:
                     #comando mal formatado
@@ -585,12 +644,19 @@ def local_command_func():
                 print_help()
         elif cmd == "?":
             print_help()
-        
+
+def flask_ready():
+    app.run('192.168.1.102',8001,debug=False)
+
+
 def start():
+    flask_server_thread = threading.Thread(target=flask_ready)
+    flask_server_thread.start()
     binary_data_server_thread = threading.Thread(target=binary_data_service)
     binary_data_server_thread.start()
-    local_command_thread = threading.Thread(target=local_command_func)
-    local_command_thread.start()
+    # mandar codigos pela linha de comando
+    # local_command_thread = threading.Thread(target=local_command_func)
+    # local_command_thread.start()
     server.listen()
     while True:
         conn,addr = server.accept()
@@ -605,6 +671,7 @@ def start():
 # get_Config()
 if __name__ == "__main__":
     print("[Starting] Experiment Server Starting...")
+    # app.run()
     start()
 
 
