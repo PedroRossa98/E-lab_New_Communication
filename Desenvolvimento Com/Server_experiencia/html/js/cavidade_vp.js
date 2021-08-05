@@ -132,7 +132,7 @@ function getPoints()
 				total_point_1 = total_point_1 +1
 				document.getElementById('total_point').innerHTML = 'Total points : ' + parseInt(total_point_1,10);
 				document.getElementById('pi').innerHTML = 'PI : ' + (4*parseFloat(point_in_1,10)/parseFloat(total_point_1,10));
-				
+				document.getElementById('coisa').innerHTML +='.';
 			}
 			getPoints()
 		}
