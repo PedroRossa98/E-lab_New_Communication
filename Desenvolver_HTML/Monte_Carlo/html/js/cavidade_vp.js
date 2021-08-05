@@ -25,8 +25,6 @@ function Start_MC(){
 	dados_f = [];
 	if (R_old !== R)
 	{
-		Plotly.purge('graph');
-		desenharCSV(R);
 		point_in_1 = 0
 		total_point_1 = 0
 	}
