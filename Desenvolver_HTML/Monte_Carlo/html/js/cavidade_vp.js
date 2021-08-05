@@ -16,8 +16,10 @@ var point_in_1 = 0
 var total_point_1 = 0
 
 function Start_MC(){
-	R = $("#R").val();
-	Iteration = $("#Iteration").val();
+	if ($("#R").val() !== undefined)
+		R = $("#R").val();
+	if ($("#Iteration").val() !== undefined)
+		Iteration = $("#Iteration").val();
 	JSON = '{"experiment_name": "Monte Carlo", "config_experiment": {"R":'+ String(R)+', "Iteration":'+String(Iteration)+'}}'
 	var url = 'http://' + rpiIP + '/user';
 	console.log('JSON : ' +  url);
@@ -43,3 +45,6 @@ function Start_MC(){
 }
 
 
+function getPoints(){
+	console.log('Gerar o MC!!!');
+}
