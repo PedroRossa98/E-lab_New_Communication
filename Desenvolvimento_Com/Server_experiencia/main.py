@@ -39,6 +39,7 @@ CORS(app)
 PORT = 5050
 BINARY_DATA_PORT = 5051
 SERVER = '192.168.1.102'#10.7.0.1'
+
 DISCONNECT_MESSAGE = '!DISCONNECT'
 FORMAT='utf-8'
 HEADER=64
@@ -215,7 +216,10 @@ binary_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 binary_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 binary_server.bind((SERVER, BINARY_DATA_PORT))
 
-segredos = { "10.7.0.35":{"segredo":"sou eu","nome":"WP_LIS_IST"}, "192.168.1.102":{"segredo":"estou bem","nome":"Cavidade"}}
+segredos = {"10.7.0.35":{"segredo":"sou eu",
+                         "nome":"WP_LIS_IST"},
+            "192.168.1.83":{"segredo":"estou bem",
+                            "nome":"Monte_Carlo"}}
 
 def send(msg,conn):
     try:
@@ -443,8 +447,8 @@ def check_msg(myjson,conn):
             print("Experiment ended at the time: "+str(myjson["timestamp"])+"\n") 
             # printar a varivel global 
         elif str(myjson["status"]) == "running":
-            pass
-            # print("Time:"+str(myjson["timestamp"])+";\n Status:"+str(myjson["status"])+";\n Dados:"+str(myjson['Data'])+"\n")
+            #pass
+            print("Time:"+str(myjson["timestamp"])+";\n Status:"+str(myjson["status"])+";\n Dados:"+str(myjson['Data'])+"\n")
             # Gravar numa variavel global todos os dados
         else:
             print("Json is incorrect verify the RPi_Server of the experemente ")
@@ -591,17 +595,16 @@ def local_command_func():
     
     re_name_cmd = re.compile("^(?P<experiment_name>\w+)\s(?P<experiment_command>\w+)")
     re_parameters = re.compile("(\w+):(\d+)")
-    # print(EXP_PROCOL)
     while True:
         cmd = input("Please insert command to send to a experiment\n")
         cmd = cmd.strip()
-        tester = json.loads(EXP_PROCOL["Cavidade"])
         if re_name_cmd.match(cmd) != None :
             re_match = re_name_cmd.match(cmd)
             if re_match.group("experiment_command") == "cfg" and re_match.group("experiment_name") in EXP_CONN_LIST:
                 #Aqui para ser mais completo, ler do json correspondente
                 #os parametros que a experiencia tem, se for para funcionar com
                 #outras para além do pêndulo
+                tester = json.loads(EXP_PROCOL[re_match.group("experiment_name")])
                 samples = None
                 deltaX = None
                 paramenters_found = re_parameters.findall(cmd)
@@ -646,7 +649,7 @@ def local_command_func():
             print_help()
 
 def flask_ready():
-    app.run('192.168.1.102',8001,debug=False)
+    app.run('127.0.0.1',8001,debug=False)
 
 
 def start():
@@ -655,8 +658,8 @@ def start():
     binary_data_server_thread = threading.Thread(target=binary_data_service)
     binary_data_server_thread.start()
     # mandar codigos pela linha de comando
-    # local_command_thread = threading.Thread(target=local_command_func)
-    # local_command_thread.start()
+    local_command_thread = threading.Thread(target=local_command_func)
+    local_command_thread.start()
     server.listen()
     while True:
         conn,addr = server.accept()

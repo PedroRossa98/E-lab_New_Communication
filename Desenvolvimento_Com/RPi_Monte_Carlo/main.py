@@ -9,16 +9,19 @@ import time
 interface = None
 
 HEADER = 64
-PORT = 5050
-BINARY_DATA_PORT = 5051
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
+
 SERVER = "192.168.1.102"
+MY_IP = "192.168.1.83"
+SEGREDO = "estou bem"
+PORT = 5050
+BINARY_DATA_PORT = 5051
+
 ADDR = (SERVER, PORT)
 
 CONFIG_OF_EXP = []
-MY_IP = "192.168.1.102"
-SEGREDO = "estou bem"
+
 SAVE_DATA = []
 
 def send_exp_data():

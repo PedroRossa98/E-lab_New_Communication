@@ -4,7 +4,7 @@ console.log('Cavidade', env.IP, env.USER, env.HOSTNAME);
 var rpiRJ45IP = '192.168.1.81';  //RJ45
 var rpiWIFIIP = '192.168.1.82';  //WIFI
 var rpiBeamPlasma = '127.0.0.1:8085' 
-var novo = '192.168.1.102:8001'
+var novo = '127.0.0.1:8001';
 var rpiIP =  novo;
 
 var openValvuleTime = 100;
@@ -73,8 +73,9 @@ var total_point_1 = 0
 function Start_MC(){
 	R = $("#R").val();
 	Iteration = $("#Iteration").val();
-	JSON = '{"experiment_name": "Cavidade", "config_experiment": {"R":'+ String(R)+', "Iteration":'+String(Iteration)+'}}'
+	JSON = '{"experiment_name": "Monte_Carlo", "config_experiment": {"R":'+ String(R)+', "Iteration":'+String(Iteration)+'}}'
 	var url = 'http://' + rpiIP + '/user';
+	console.log('JSON : ' +  url);
 	console.log('JSON : ' +  JSON);
 	dados_f = [];
 	if (R_old !== R)
@@ -112,8 +113,11 @@ function getPoints()
 		
 		/* if (response.Data !== 'undefined')
 			 */
+		console.log(response);
+		console.log(typeof response);
 		if (response.status !== 'undefined' && response.status === 'Experiment Ended')
 		{
+			
 			myStopFunction();
 		} 
 		else{
@@ -132,7 +136,7 @@ function getPoints()
 				total_point_1 = total_point_1 +1
 				document.getElementById('total_point').innerHTML = 'Total points : ' + parseInt(total_point_1,10);
 				document.getElementById('pi').innerHTML = 'PI : ' + (4*parseFloat(point_in_1,10)/parseFloat(total_point_1,10));
-				document.getElementById('coisa').innerHTML +='.';
+				
 			}
 			getPoints()
 		}
@@ -191,7 +195,8 @@ function desenharCSV(results) {
 			}
 			var layout = {
 				title: 'Monte Carlo',
-				height: 700,
+				width: 800,
+				height: 800,
 				xaxis: {
 					title: 'R [ua]',
 					titlefont: {
@@ -201,7 +206,8 @@ function desenharCSV(results) {
 					},
 					showticklabels: true,
 					exponentformat: 'e',
-					showexponent: 'all'
+					showexponent: 'all',
+					range: [0, R]
 				},
 				yaxis: {
 					title: 'R [ua]',
@@ -211,11 +217,57 @@ function desenharCSV(results) {
 					  color: 'black'
 					},
 					showticklabels: true,
+					  range: [0, R]
 					
 				},
+				shapes: [
+
+					// Unfilled Circle
+
+					{
+					  type: 'circle',
+					  xref: 'x',
+					  yref: 'y',
+					  x0: -R,
+					  y0: -R,
+					  x1: R,
+					  y1: R,
+					  line: {
+						color: "rgb(0, 204, 0)",
+						width: 1
+					  }
+					},
+					{
+					  type: 'line',
+					  xref: 'paper',
+					  yref: 'paper',
+					  x0: 0,
+					  y0: R,
+					  x1: R,
+					  y1: R,
+					  line: {
+						color: "rgb(255, 0, 0)",
+						width: 1
+					  }
+					},
+					{
+					  type: 'line',
+					  xref: 'paper',
+					  yref: 'paper',
+					  x0: R,
+					  y0: R,
+					  x1: R,
+					  y1: 0,
+					  line: {
+						color: "rgb(255, 0, 0)",
+						width: 1
+					  }
+					}
+				],
+				
 			};
 			console.log(dados_f);
-			Plotly.plot('graph', dados_f, layout);
+			Plotly.newPlot('graph', dados_f, layout);
 }
 
 
