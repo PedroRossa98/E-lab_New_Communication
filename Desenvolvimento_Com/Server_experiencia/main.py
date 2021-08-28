@@ -342,7 +342,8 @@ def ConfigureStartExperiment(user_json):
 
     #CHECK REPLY! (Alterações na função check_reply)
 
-@app.route('/user', methods=['POST'])
+# change endpoint to  /start_experiment
+@app.route('/start_experiment', methods=['POST'])
 def Flask_f1():
     if request.method == 'POST':
         #origin = request.headers.get('Origin')	

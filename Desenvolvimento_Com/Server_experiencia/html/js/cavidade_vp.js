@@ -74,7 +74,7 @@ function Start_MC(){
 	R = $("#R").val();
 	Iteration = $("#Iteration").val();
 	JSON = '{"experiment_name": "Monte_Carlo", "config_experiment": {"R":'+ String(R)+', "Iteration":'+String(Iteration)+'}}'
-	var url = 'http://' + rpiIP + '/user';
+	var url = 'http://' + rpiIP + '/start_experiment';
 	console.log('JSON : ' +  url);
 	console.log('JSON : ' +  JSON);
 	dados_f = [];
