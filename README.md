@@ -1,1 +1,1 @@
-Ola w2_sou eu
+Ola w2_sou eu ola
