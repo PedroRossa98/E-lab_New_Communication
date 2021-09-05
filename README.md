@@ -1,6 +1,19 @@
-Ola w2_sou eu ola 
+Já corrigi o html. 
+Adcionei as pastas 'templates' e 'static' onde contem os ficheiros para o flask correr bem
+Quanto ao app.py as alterações que fiz está  abaixo.
 
 
-Nota: Adcionei aqui 'templates/index.html' and 'static/css_js_conf' para poder correr o flask
+```python
+app = Flask(__name__, template_folder='templates', static_folder='static')
+}
+```
+```python
+@app.route('/',methods=['GET'])
+def HTML_exe():
+    return render_template("index.html")
+}
+
+
+
 
 
