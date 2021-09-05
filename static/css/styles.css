@@ -1,1 +1,116 @@
+/* Created by Zé Carlos
+Lisbon: ago 24 15:59*/
 
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+
+
+/* Please check w3schools*/
+  .build-box {
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size: 0.8em;
+  width: 20em;
+  padding: 1em;
+  
+  
+  }
+  
+  .build-box legend,
+  .build-box label {
+  padding: 0;
+  font-weight: bold;
+  }
+  
+  .build-box label.choice {
+  font-size: 0.9em;
+  font-weight: normal;
+  }
+
+  .build-box input {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    border-width: 1px;
+    border-style: solid;
+    padding: 16px;
+    outline: 0;
+    font-family: inherit;
+    font-size: 0.95em;
+  }
+  
+  .build-box input[type="text"],
+  .build-box select,
+  .build-box textarea {
+  display: block;
+  width: 100%;
+  border: 1px solid  skyblue;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size: 0.9em;
+  padding: 0.3em;
+  }
+  
+  .build-box textarea {
+  height: 100px;
+ 
+  }
+  
+  .build-box button {
+  padding: 0.8em;
+  border-radius: 0.8em;
+ 
+  border: none;
+  font-weight: bold;
+  margin-top: 1em;
+  background:skyblue;
+  }
+  
+  .build-box button:hover {
+  background: rgb(122, 116, 116);
+  cursor: pointer;
+  }
+  
+  body {
+    
+    font-family: Roboto, sans-serif;
+  
+    background-color:white;
+  
+    padding: 0.5em 2em;
+    margin: 1em auto;
+  
+  }
+  
+ 
+  footer {
+    font-size: 0.8em;
+    color: #777;
+    text-align: center;
+  
+    margin-top: 1.5em;
+    border-top: 1px solid #777;
+  }
+  
+  footer a {
+    color: inherit;
+  }
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
