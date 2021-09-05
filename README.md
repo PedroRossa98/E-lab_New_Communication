@@ -1,4 +1,4 @@
 Ola w2_sou eu ola 
 
 
-# Ficheiros que estão neste root - para alterar para conseguires correr o html
+# Adcionei aqui 'templates/index.html' and 'static/css_js_conf' para poder correr o flask
