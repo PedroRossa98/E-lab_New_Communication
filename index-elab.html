@@ -1,0 +1,135 @@
+<!-- HTML page rendering the Monte Carlo Method-->
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title> Elab|Monte Carlo</title>
+		<meta name="description" content="Monte Carlo Method">
+        <meta name="author" content="Pedro Rosa and José Carlos">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<!-- External css code-->
+
+
+		<link rel="shortcut icon" type="image/png" href="">
+		<link rel="shortcut icon" href="http://e-lab.ist.eu/rec.web/faviconElab.ico">
+		<link rel="stylesheet" href="styles.css">
+		<link rel="stylesheet" href="Desenvolver_HTML/Monte_Carlo/html/css/elab.css">
+		
+		
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script src="https://d3js.org/d3.v6.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+        <script src ='https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js'></script>
+        <script src ='https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.min.js'></script>
+        <script src ='https://cdnjs.cloudflare.com/ajax/libs/jquery-replace-text/1.1.0/jquery-replace-text-min.js'></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+	    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3"></script> -->
+	    <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+	    <script src="https://unpkg.com/chartjs-plugin-zoom@1.0.0-beta.1/dist/chartjs-plugin-zoom.min.js"></script>
+	    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	    <script src='Desenvolver_HTML/Monte_Carlo/html/config/env.js'></script>
+
+		<!--<script type="text/javascript">
+			$(function() {
+				// setup our event handlers
+				Start_MonteCarlo();
+	
+				// execute the Monte Carlo method right on startup
+				$('#button_strat_MC').click();
+			});
+		</script>-->
+	</head>
+
+	<!-- Content of the webpage-->
+	<body>
+		<!--<div class="paper">-->
+			<thead>
+				<tr></tr>
+					<th  colspan="4">
+						<div class="clearfix float-my-children">
+							<div style="margin-left: 50px;margin-top: 10px;"></div>
+							<img src="http://e-lab.ist.eu/rec.web/javax.faces.resource/elab_logo.png.faces?ln=images" id="logo-elab" >
+						    
+						    <div style="margin-left: 20px; margin-top: 15px; color:#86b300;">
+							   <h2> Monte Carlo </h2>
+						    </div>
+						    <div style="margin-left: 50px; margin-top: 15px; color:#86b300;">
+							  <h2> Remote Experiment </h2>
+						    </div>
+						</div>
+					</th>
+				</tr>
+			</thead>
+			<!-- Section1: about this HTML page-->
+			<section class="intro">
+			    </br> <hr>
+				<h2 id="about-the-Monte-Carlo">Estimating pi (π) using Monte Carlo Simulation</h2>
+				<p>
+					With this <strong>HTML</strong>, you can perform an experiment remotely, i.e, without the need to be present physically into the Laboratory. You will use the Monte Carlo Method to estimate the value of Pi. In order to do that, just fill the input to values that you want and make sure to run the flask server.
+                    </br>The main idea behind this method can be found <a href="https://en.wikipedia.org/wiki/Carbon_dioxide_equivalent">here.</a> Do not forget to have fun!!!
+				</p>
+				<hr>
+			</section>
+			<!-- Section 2 for botton-->
+			<table>
+				<tr>
+					<td>
+						<div class="myForm">
+							<label><em style="color:#1a5fb4">Start the experiment</em>:</label> <hr>
+							<label>Radius [ua]:</label>
+							<input id="R" type="text" name="R" value="1"></br>				
+					        <label>Number of samples:</label>
+				         	<input id="Iteration" type="text" name="Iteration" value="100"></br>
+
+							<!--<label class="checkbox"><input id="use_random_org" type="checkbox" value="1"/>&nbsp;Use random numbers from <a href="http://random.org">random.org</a></label>
+					        <span class="help-block"><span class="label label-important">Important</span> This service has a quota of about 1.000.000 numbers per IP address!</span>-->
+
+							<div class="sansserif">
+								<button id="button_strat_MC"  onclick="Start_MonteCarlo()">Start</button>
+								<button id="resetBtn"  type="reset" value="Reset" onclick="set_reset()">Reset </button>
+							</div> <hr> 
+							<label><em style="color:#1a5fb4">Results of the experiment</em>:</label>  <br>   <hr>   
+							<div style="margin-left: 20px;">
+								<div>
+									<label id="point_in">Points in : </label>
+								</div> </br>
+								<div>
+									<label id="total_point">Total points : </label>
+								</div> </br>
+								<div>
+									<label id="pi">Pi : </label>
+								</div>
+							</div>
+							
+
+							
+						</div>
+						
+					</td>
+					<td>
+						<div id='myplot' style="margin-left: 5px; width: 800px; height: 500px;"></div>
+						
+					</td>
+				</tr>
+			</table>
+			
+			<footer>
+				<p>
+					<span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/InteractiveResource" property="dct:title" rel="dct:type">webpage </span>,
+                     was first created by
+                     <a xmlns:cc="http://creativecommons.org/ns#" href="https://github.com/PedroRossa98" property="cc:attributionName" rel="cc:attributionURL">Pedro Rosa</a> and improved by 
+                     <a xmlns:cc="http://creativecommons.org/ns#" href="https://github.com/Ze-Veiga98" property="cc:attributionName" rel="cc:attributionURL">José Veiga</a>
+				</p>
+				<p>
+					Source code available on GitHub repo <a href="https://github.com/PedroRossa98/E-lab_New_Communication">PedroRossa98/E-lab_New_Communication</a>.
+				  </p>
+			</footer>
+			
+		<!--</div>-->
+	</body>
+	<script type="text/javascript" src='elab.js'></script>
+   <!-- <script type="text/javascript" src='js/cavidade.js'></script>-->
+	
+</html>
